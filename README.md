@@ -1,7 +1,7 @@
 # Dataset Generation with procedural-tracks
 
-Generate an arbitrary number of tracks images to use in Machine Learning or else. <br>
-From pure grayscale track to rgb/kerbs/starting grid
+Generate an arbitrary number of Racing Track Images to use in Machine Learning or else. <br>
+From pure grayscale to rgb/kerbs/starting grid
 
 ## Grayscale
 
@@ -21,11 +21,11 @@ From pure grayscale track to rgb/kerbs/starting grid
 # Usage
 python main.py --n-tracks 2 --width 512 --height 512 --rgb y --kerb y --starting-grid y <br>
 
-<b>--n-tracks </b> Number of tracks to generate <br>
-<b>--width/--height </b> Width/Height of images in pixel <br>
-<b>--rgb </b> Rgb or Grayscale <br>
-<b>--kerb </b> To draw kerbs <br>
-<b>--starting-grid </b> To draw starting-greed <br>
+<b>--n-tracks </b> : Number of tracks to generate <br>
+<b>--width/--height </b> : Width/Height of images in pixel <br>
+<b>--rgb </b> : Rgb or Grayscale <br>
+<b>--kerb </b> : To draw kerbs <br>
+<b>--starting-grid </b> : To draw starting-greed <br>
 
 
 <br>
