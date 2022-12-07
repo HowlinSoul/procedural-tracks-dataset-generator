@@ -10,6 +10,8 @@ import argparse
 
 from constants import *
 
+from PIL import Image
+
 ####
 ## logical functions
 ####
@@ -226,7 +228,7 @@ def draw_single_point(surface, color, pos, radius=2):
 def draw_single_line(surface, color, init, end):
     pygame.draw.line(surface, color, init, end)
 
-def draw_track(surface, color, points, corners):
+def draw_track(surface, color, points, corners, is_starting_grid_to_draw = False):
     radius = TRACK_WIDTH // 2
     # draw kerbs
     draw_corner_kerbs(surface, corners, radius)
@@ -237,16 +239,18 @@ def draw_track(surface, color, points, corners):
         track_chunk = pygame.Surface(chunk_dimensions, pygame.SRCALPHA)
         pygame.draw.circle(track_chunk, color, (radius, radius), radius)
         surface.blit(track_chunk, blit_pos)
-    starting_grid = draw_starting_grid(radius*2)
-    # rotate and place starting grid
-    offset = TRACK_POINT_ANGLE_OFFSET
-    vec_p = [points[offset][1] - points[0][1], -(points[offset][0] - points[0][0])]
-    n_vec_p = [vec_p[0] / math.hypot(vec_p[0], vec_p[1]), vec_p[1] / math.hypot(vec_p[0], vec_p[1])]
-    # compute angle
-    angle = math.degrees(math.atan2(n_vec_p[1], n_vec_p[0]))
-    rot_grid = pygame.transform.rotate(starting_grid, -angle)
-    start_pos = (points[0][0] - math.copysign(1, n_vec_p[0])*n_vec_p[0] * radius, points[0][1] - math.copysign(1, n_vec_p[1])*n_vec_p[1] * radius)    
-    surface.blit(rot_grid, start_pos)
+
+    if is_starting_grid_to_draw:
+        starting_grid = draw_starting_grid(radius*2)
+        # rotate and place starting grid
+        offset = TRACK_POINT_ANGLE_OFFSET
+        vec_p = [points[offset][1] - points[0][1], -(points[offset][0] - points[0][0])]
+        n_vec_p = [vec_p[0] / math.hypot(vec_p[0], vec_p[1]), vec_p[1] / math.hypot(vec_p[0], vec_p[1])]
+        # compute angle
+        angle = math.degrees(math.atan2(n_vec_p[1], n_vec_p[0]))
+        rot_grid = pygame.transform.rotate(starting_grid, -angle)
+        start_pos = (points[0][0] - math.copysign(1, n_vec_p[0])*n_vec_p[0] * radius, points[0][1] - math.copysign(1, n_vec_p[1])*n_vec_p[1] * radius)    
+        surface.blit(rot_grid, start_pos)
 
 def draw_starting_grid(track_width):
     tile_height = START_TILE_HEIGHT # Move outside
@@ -284,6 +288,7 @@ def draw_rectangle(dimensions, color, line_thickness=1, fill=False):
     pygame.draw.rect(rect_surf, color, (0, 0, dimensions[0], dimensions[1]), filled)
     return rect_surf
 
+
 def draw_corner_kerbs(track_surface, corners, track_width):
     # rotate and place kerbs
     step = STEP_TO_NEXT_KERB_POINT
@@ -320,6 +325,7 @@ def draw_corner_kerbs(track_surface, corners, track_width):
             last_kerb = start_pos
             track_surface.blit(rot_kerb, start_pos)
 
+# draw a single kerb tile
 def draw_single_kerb():
     tile_height = KERB_TILE_HEIGHT # Move outside
     tile_width = KERB_TILE_WIDTH # Move outside
@@ -328,46 +334,103 @@ def draw_single_kerb():
     kerb.blit(kerb_tile, (0, 0))
     return kerb
 
+
+
+
+
+
+
+
+
+
+
+
 ####
 ## Main function
 ####
-def main(debug=True, draw_checkpoints_in_track=True):
+def main(debug=True, rgb = False, draw_kerb_in_track = False, draw_checkpoints_in_track=False,
+        is_starting_grid_to_draw=False, generate_n_tracks=5, image_width=128, image_height=128):
+
+    # Initialize pygame
     pygame.init()
+    # Set the width and height of the screen [width, height]
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    background_color = GRASS_GREEN
-    screen.fill(background_color)
+    # Background Color for Grayscale image or RGB
+    background_color = GRASS_GREEN if rgb else BLACK
+    
+    track_count = 0
 
-    # generate the track
-    points = random_points()
-    hull = ConvexHull(points)
-    track_points = shape_track(get_track_points(hull, points))
-    corner_points = get_corners_with_kerb(track_points)
-    f_points = smooth_track(track_points)
-    # get complete corners from keypoints
-    corners = get_full_corners(f_points, corner_points)
-    # draw the actual track (road, kerbs, starting grid)
-    draw_track(screen, GREY, f_points, corners)
-    # draw checkpoints
-    checkpoints = get_checkpoints(f_points)
-    if draw_checkpoints_in_track or debug:
-        for checkpoint in checkpoints:
-            draw_checkpoint(screen, f_points, checkpoint, debug)
-    if debug:
-        # draw the different elements that end up
-        # making the track
-        draw_points(screen, WHITE, points)
-        draw_convex_hull(hull, screen, points, RED)
-        draw_points(screen, BLUE, track_points)
-        draw_lines_from_points(screen, BLUE, track_points)    
-        draw_points(screen, BLACK, f_points)
+    #for track_count in range(generate_n_tracks):
 
-    pygame.display.set_caption(TITLE)
-    while True: # main loop
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-        pygame.display.update()
+    # Loop until the number of tracks generated is equal to generate_n_tracks
+    while track_count < generate_n_tracks:
+        track_count += 1
+        screen.fill(background_color)
+        # Generate a difficulty level
+        difficulty = np.random.uniform(0.1, 1)
+
+        # generate the track
+        # Sometimes generating the points fails due to randomness, so we try again
+        try:
+            points = random_points()
+            hull = ConvexHull(points)
+            track_points = shape_track(get_track_points(hull, points), difficulty = difficulty)
+            corner_points = get_corners_with_kerb(track_points) if draw_kerb_in_track else []
+            f_points = smooth_track(track_points)
+            # get complete corners from keypoints
+            corners = get_full_corners(f_points, corner_points)
+            #corners = get_full_corners(f_points, )
+        except ValueError as e:
+            track_count -= 1
+            if debug:
+                print(e)
+            continue
+
+        # draw the actual track (road, kerbs, starting grid)
+        draw_track(screen, GREY if rgb else WHITE , f_points, corners, is_starting_grid_to_draw = is_starting_grid_to_draw)
+        # draw checkpoints
+        if draw_checkpoints_in_track or debug:
+            checkpoints = get_checkpoints(f_points)
+            for checkpoint in checkpoints:
+                draw_checkpoint(screen, f_points, checkpoint, debug)
+
+
+        # From Pygame to PIL Image
+        pil_string_image = pygame.image.tostring(screen, 'RGB', False)
+        pli_image = Image.frombytes('RGB', screen.get_size(), pil_string_image, 'raw')
+
+        # Convert Image to Grayscale
+        if not rgb:
+            pli_image = pli_image.convert("L")
+        # resize image
+        pli_image = pli_image.resize((image_width, image_height), Image.Resampling.LANCZOS)
+
+        # Save Image
+        pli_image.save(f"gen_tracks/track_{track_count}.jpg", 'JPEG')
+        
+
+
+
+        if debug:
+            # draw the different elements that end up
+            # making the track
+            draw_points(screen, WHITE, points)
+            draw_convex_hull(hull, screen, points, RED)
+            draw_points(screen, BLUE, track_points)
+            draw_lines_from_points(screen, BLUE, track_points)    
+            draw_points(screen, BLACK, f_points)
+
+   
+            pygame.display.set_caption(TITLE)
+            while True: # main loop
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        pygame.quit()
+                        sys.exit()
+                pygame.display.update()
+
+    
+    
 
 def str2bool(v):
     """
@@ -382,6 +445,7 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
+
 if __name__ == '__main__':
     # rn.seed(rn.choice(COOL_TRACK_SEEDS))
     parser = argparse.ArgumentParser(description="Procedural racetrack generator")
@@ -392,5 +456,16 @@ if __name__ == '__main__':
     parser.add_argument("--show-checkpoints", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Show checkpoints")
+
+    parser.add_argument("--rgb", type=str2bool, nargs='?', default=False, help="Generate RGB images")
+    parser.add_argument("--kerb", type=str2bool, nargs='?', default=False, help="Generate kerbs in the Images")
+    parser.add_argument("--n-tracks", type=int, default=5, help="Number of Tracks to Generate")
+    parser.add_argument("--width", type=int, default=128, help="Width of the image")
+    parser.add_argument("--height", type=int, default=128, help="Height of the image")
+    parser.add_argument("--starting-grid", type=str2bool, nargs='?', default=False, help="Draw starting grid")
+
+    # Parse arguments
     args = parser.parse_args()
-    main(debug=args.debug, draw_checkpoints_in_track=args.show_checkpoints)
+    # Call main function
+    main(debug=args.debug, rgb=args.rgb, draw_kerb_in_track=args.kerb, draw_checkpoints_in_track=args.show_checkpoints, generate_n_tracks=args.n_tracks, image_width=args.width, image_height=args.height , is_starting_grid_to_draw=args.starting_grid)
+    

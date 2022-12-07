@@ -1,6 +1,6 @@
 # Screen dimensions
-WIDTH = 800 
-HEIGHT = 600
+WIDTH = 800  #800
+HEIGHT = 800 # 600
 
 ###
 # Drawing
@@ -8,12 +8,12 @@ HEIGHT = 600
 TITLE = 'Procedural Race Track'
 
 STARTING_GRID_TILE = 'static/grid_tile.png'
-START_TILE_HEIGHT = 10
-START_TILE_WIDTH = 10
+START_TILE_HEIGHT = 10 #10
+START_TILE_WIDTH = 10   #10
 
 KERB_TILE = 'static/kerb_tile.png'
 KERB_TILE_HEIGHT = 7
-KERB_TILE_WIDTH = 12
+KERB_TILE_WIDTH = 12 #12
 
 # Colors
 WHITE = [255, 255, 255]
@@ -46,7 +46,7 @@ SPLINE_POINTS = 1000
 
 # Margin between screen limits and any of the points that shape the
 # initial polygon
-MARGIN = 50
+MARGIN = 100 # 50
 # minimum distance between points that form the track skeleton
 MIN_DISTANCE = 20
 # Maximum midpoint displacement for points placed after obtaining the initial polygon
@@ -62,7 +62,7 @@ MAX_ANGLE = 90
 MIN_KERB_ANGLE = 20
 MAX_KERB_ANGLE = 90
 
-TRACK_WIDTH = 40
+TRACK_WIDTH = 30 # 40
 
 FULL_CORNER_NUM_POINTS = 17
 
