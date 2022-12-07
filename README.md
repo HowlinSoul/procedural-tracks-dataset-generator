@@ -6,17 +6,17 @@ From pure grayscale track to rgb/kerbs/starting grid
 ## Grayscale
 
 ![Grayscale 1](/gen_tracks/track_1_gray.jpg)
-![Grayscale 2](/gen_tracks/track_2_gray.jpg) <br>
+<br>
 
-## RGB 
+## RGB 
 
 ![RGB 1](/gen_tracks/track_1_rgb.jpg)
-![RGB 2](/gen_tracks/track_2_rgb.jpg) <br>
+<br>
 
 ## Full Gamma Sportsback
 
 ![Complete Track 1](/gen_tracks/track_1_kerb_startgrid.jpg)
-![Complete Track 2](/gen_tracks/track_2_kerb_startgrid.jpg) <br>
+<br>
 
 # Usage
 python main.py --n-tracks 2 --width 512 --height 512 --rgb y --kerb y --starting-grid y <br>
@@ -28,6 +28,11 @@ python main.py --n-tracks 2 --width 512 --height 512 --rgb y --kerb y --starting
 <b>--starting-grid </b> To draw starting-greed <br>
 
 
+<br>
+<br>
+<br>
+<br>
+<br>
 
 # procedural-tracks (Original Project)
 Procedural race track generation with Python.
