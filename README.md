@@ -1,4 +1,34 @@
-# procedural-tracks
+# Dataset Generation with procedural-tracks
+
+Generate an arbitrary number of tracks images to use in Machine Learning or else.
+From pure grayscale track to rgb/kerbs/starting grid
+
+## Grayscale
+
+![Grayscale 1](/gen_tracks/track_1_gray.jpg)
+![Grayscale 2](/gen_tracks/track_2_gray.jpg)
+
+## RGB 
+
+![RGB 1](/gen_tracks/track_1_rgb.jpg)
+![RGB 2](/gen_tracks/track_2_rgb.jpg)
+
+## Full Gamma Sportsback
+
+![Complete Track 1](/gen_tracks/track_1_kerb_startgrid.jpg)
+![Complete Track 2](/gen_tracks/track_2_kerb_startgrid.jpg)
+
+# Usage
+python main.py --n-tracks 2 --width 512 --height 512 --rgb y --kerb y --starting-grid y
+
+<b>--n-tracks </b> Number of tracks to generate
+<b>--width/--height </b> Width/Height of images in pixel
+<b>--rgb </b> Rgb or Grayscale
+<b>--kerb </b> To draw kerbs
+<b>--starting-grid </b> To draw starting-greed
+
+
+# procedural-tracks (Original Project)
 Procedural race track generation with Python.
 
 Blog post with more insights [here](https://bitesofcode.wordpress.com/2020/04/09/procedural-racetrack-generation/).
